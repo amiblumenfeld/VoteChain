@@ -6,12 +6,11 @@
 VoteChain documentation
 =======================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-project start
+The VoteChain project includes tools for document signing and verification using RSA cryptography.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   user_guide
 

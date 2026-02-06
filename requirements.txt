@@ -1,3 +1,5 @@
 sphinx
 sphinx-autobuild
 invoke
+streamlit
+pycryptodome

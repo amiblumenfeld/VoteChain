@@ -14,3 +14,19 @@ def build_doc(c):
     """
 
     c.run("sphinx-autobuild source/ build/")
+
+
+@task
+def run_app(c):
+    """Run the Streamlit application for document signing and verification.
+    
+    This task launches the Streamlit application which provides a user-friendly
+    interface for signing documents and verifying signatures using RSA cryptography.
+    
+    Args:
+        c: Execution context used to run shell commands.
+    
+    Usage:
+        invoke run-app
+    """
+    c.run("streamlit run streamlit_app/app.py")
