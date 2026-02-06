@@ -7,7 +7,7 @@ cryptographic algorithms and verify the authenticity of signed documents.
 
 import streamlit as st
 from Crypto.PublicKey import RSA
-from Crypto.Signature import pkcs1_v1_5
+from Crypto.Signature import PKCS1_v1_5
 from Crypto.Hash import SHA256
 import base64
 import os
@@ -47,7 +47,7 @@ def sign_document(document_data: bytes, private_key: RSA.RsaKey) -> str:
         Base64 encoded signature
     """
     hash_object = SHA256.new(document_data)
-    signer = pkcs1_v1_5.new(private_key)
+    signer = PKCS1_v1_5.new(private_key)
     signature = signer.sign(hash_object)
     return base64.b64encode(signature).decode()
 
@@ -67,7 +67,7 @@ def verify_document(document_data: bytes, signature_b64: str, public_key: RSA.Rs
     try:
         signature = base64.b64decode(signature_b64)
         hash_object = SHA256.new(document_data)
-        verifier = pkcs1_v1_5.new(public_key)
+        verifier = PKCS1_v1_5.new(public_key)
         return verifier.verify(hash_object, signature)
     except Exception as e:
         st.error(f"Error during verification: {str(e)}")
