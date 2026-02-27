@@ -1,251 +1,227 @@
 """
-Streamlit application for document signing and verification.
+Secure Voting System - Main Application Entry Point
 
-This application provides a user-friendly interface to sign documents using
-cryptographic algorithms and verify the authenticity of signed documents.
+This Streamlit application demonstrates a secure voting system using:
+- Blind signatures for voter privacy
+- RSA cryptography for authenticity
+- Blockchain for immutability and auditability
+
+Navigate using the sidebar to access:
+1. Setup: Admin page to initialize election
+2. Vote: Main page for casting votes
+3. Results: Real-time election results
+4. Verify: Audit and receipt verification
 """
 
 import streamlit as st
-from Crypto.PublicKey import RSA
-from Crypto.Signature import PKCS1_v1_5
-from Crypto.Hash import SHA256
-import base64
-import os
 
-# Set page config
-st.set_page_config(page_title="Document Signing & Verification", layout="wide")
+from utils import initialize_session_state
 
-# Title
-st.title("📝 Document Signing & Verification Application")
+# Page configuration
+st.set_page_config(
+    page_title="Secure Voting System",
+    page_icon="🗳️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# Sidebar for navigation
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Select an operation:", ["Sign Document", "Verify Document", "Key Management"])
+# Initialize session state
+initialize_session_state()
 
-# Initialize session state for keys
-if "private_key" not in st.session_state:
-    st.session_state.private_key = None
-if "public_key" not in st.session_state:
-    st.session_state.public_key = None
-
-
-def generate_keys():
-    """Generate RSA key pair."""
-    key = RSA.generate(2048)
-    return key, key.publickey()
-
-
-def sign_document(document_data: bytes, private_key: RSA.RsaKey) -> str:
+# Main Page
+st.title("🗳️ Secure Voting System Demo")
+st.write(
     """
-    Sign a document using RSA private key.
-    
-    Args:
-        document_data: The document to sign as bytes
-        private_key: RSA private key for signing
-    
-    Returns:
-        Base64 encoded signature
+    Welcome to the **Secure Voting System** - a demonstration of how modern cryptography 
+    can ensure both **voter privacy** and **electoral integrity**.
     """
-    hash_object = SHA256.new(document_data)
-    signer = PKCS1_v1_5.new(private_key)
-    signature = signer.sign(hash_object)
-    return base64.b64encode(signature).decode()
+)
 
+st.divider()
 
-def verify_document(document_data: bytes, signature_b64: str, public_key: RSA.RsaKey) -> bool:
+# Two-Act Experience Overview
+st.header("The Two-Act Experience")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("Act 1: The Crypto Theater 🎭")
+    st.write(
+        """
+        Watch the blind signature process unfold:
+        - Your vote gets **blinded** (hidden from view)
+        - Government **signs** it (proving you're eligible)
+        - Signature gets **unblinded** (becomes valid)
+        
+        **Result:** You have a valid proof of eligibility without 
+        the government ever seeing your choice!
+        """
+    )
+
+with col2:
+    st.subheader("Act 2: The Receipt Reveal 🎉")
+    st.write(
+        """
+        You receive a verification code that proves:
+        - Your vote **exists** in the blockchain
+        - Your vote is **unchanged** and secure
+        - **Only you** have the receipt
+        
+        **Result:** You can prove your vote counts without 
+        revealing who you voted for!
+        """
+    )
+
+st.divider()
+
+# How to Use
+st.header("How to Use This Demo")
+
+st.markdown("""
+1. **Setup Page** (`🔧 Election Setup`)
+   - Generate government RSA keys
+   - Create voter key files
+   - Configure candidates
+   - Initialize the election
+   
+2. **Vote Page** (`🗳️ Cast Your Vote`)
+   - Upload your voter key
+   - Select a candidate
+   - Witness the blind signature process
+   - Cast your vote and get a receipt
+
+3. **Results Page** (`📊 Election Results`)
+   - View real-time vote counts
+   - Monitor blockchain status
+   - See vote distribution
+
+4. **Verify Page** (`🔍 Verify Your Vote`)
+   - Search for your vote using receipt code
+   - Verify blockchain integrity
+   - Explore blockchain structure
+""")
+
+st.divider()
+
+# Key Concepts
+st.header("Key Concepts")
+
+concept_cols = st.columns(3)
+
+with concept_cols[0]:
+    st.subheader("🔐 Blind Signatures")
+    st.write(
+        """
+        A cryptographic technique that allows signing a message 
+        without seeing its contents. Perfect for proving eligibility 
+        without revealing voting choice.
+        """
+    )
+
+with concept_cols[1]:
+    st.subheader("⛓️ Blockchain")
+    st.write(
+        """
+        An immutable ledger of votes where each block cryptographically 
+        links to the previous one. Any tampering is immediately detectable.
+        """
+    )
+
+with concept_cols[2]:
+    st.subheader("🎟️ Receipts")
+    st.write(
+        """
+        Unique codes proving votes were recorded and included in the 
+        blockchain. Only the voter has their receipt, ensuring privacy.
+        """
+    )
+
+st.divider()
+
+# Status Panel
+st.header("System Status")
+
+status_cols = st.columns(4)
+
+with status_cols[0]:
+    keys_status = "✅ Ready" if st.session_state.government_private_key else "⏳ Not Set"
+    st.metric("Government Keys", keys_status)
+
+with status_cols[1]:
+    candidates_status = f"✅ {len(st.session_state.candidates)}" if st.session_state.candidates else "⏳ Not Set"
+    st.metric("Candidates", candidates_status)
+
+with status_cols[2]:
+    election_status = "✅ Ready" if st.session_state.election_initialized else "⏳ Setup Needed"
+    st.metric("Election", election_status)
+
+with status_cols[3]:
+    total_votes = sum(st.session_state.vote_counts.values()) if st.session_state.vote_counts else 0
+    st.metric("Votes Cast", total_votes)
+
+st.divider()
+
+# Navigation Guide
+st.header("📍 Navigation")
+
+st.info(
     """
-    Verify a document signature using RSA public key.
+    Use the **sidebar menu** on the left to navigate between pages.
     
-    Args:
-        document_data: The document to verify as bytes
-        signature_b64: Base64 encoded signature
-        public_key: RSA public key for verification
-    
-    Returns:
-        True if signature is valid, False otherwise
+    **First time?** Start with the **Setup** page to initialize the election.
     """
-    try:
-        signature = base64.b64decode(signature_b64)
-        hash_object = SHA256.new(document_data)
-        verifier = PKCS1_v1_5.new(public_key)
-        return verifier.verify(hash_object, signature)
-    except Exception as e:
-        st.error(f"Error during verification: {str(e)}")
-        return False
+)
 
+st.divider()
 
-# Page: Sign Document
-if page == "Sign Document":
-    st.header("🔐 Sign Document")
+# Technical Details (Expandable)
+with st.expander("🔧 Technical Details"):
+    st.write("""
+    **Technology Stack:**
+    - Framework: Streamlit (Python web framework)
+    - Cryptography: PyCryptodome (RSA, SHA256)
+    - Data Structure: Custom Blockchain implementation
     
-    col1, col2 = st.columns(2)
+    **Cryptographic Algorithms:**
+    - RSA-2048 for key generation and signing
+    - SHA-256 for hashing
+    - PKCS1 v1.5 padding for signatures
     
-    with col1:
-        st.subheader("Generate Keys (if needed)")
-        if st.button("Generate New Key Pair", key="gen_keys"):
-            st.session_state.private_key, st.session_state.public_key = generate_keys()
-            st.success("Key pair generated successfully!")
-    
-    if st.session_state.private_key:
-        with col2:
-            st.subheader("Current Key Status")
-            st.success("✅ Private key loaded")
-            st.success("✅ Public key loaded")
-    else:
-        st.warning("⚠️ No private key available. Generate a key pair first.")
-    
-    st.divider()
-    
-    # File upload for signing
-    st.subheader("Upload Document to Sign")
-    uploaded_file = st.file_uploader("Choose a file to sign", key="sign_uploader")
-    
-    if uploaded_file and st.session_state.private_key:
-        if st.button("Sign Document", key="sign_btn"):
-            try:
-                file_data = uploaded_file.read()
-                signature = sign_document(file_data, st.session_state.private_key)
-                
-                st.success("✅ Document signed successfully!")
-                
-                # Display signature
-                st.subheader("Signature")
-                st.text_area("Base64 Encoded Signature:", value=signature, height=150, disabled=True)
-                
-                # Download signature
-                st.download_button(
-                    label="Download Signature",
-                    data=signature,
-                    file_name=f"{uploaded_file.name}.sig",
-                    mime="text/plain"
-                )
-                
-            except Exception as e:
-                st.error(f"Error signing document: {str(e)}")
-    elif uploaded_file and not st.session_state.private_key:
-        st.warning("Please generate a key pair first to sign documents.")
+    **Security Properties:**
+    - Blind Signature for voter anonymity
+    - Blockchain for immutability
+    - Digital signatures for authenticity
+    """)
 
+with st.expander("📚 Architecture"):
+    st.write("""
+    **Project Structure:**
+    ```
+    streamlit_app/
+    ├── app.py              # Main entry point (this file)
+    ├── crypto.py           # Cryptographic utilities
+    ├── blockchain.py       # Blockchain implementation
+    ├── utils.py            # General utilities and state management
+    └── pages/
+        ├── 1_setup.py      # Election setup
+        ├── 2_vote.py       # Voting interface
+        ├── 3_results.py    # Results dashboard
+        └── 4_verify.py     # Verification and audit
+    ```
+    
+    **Data Flow:**
+    1. Setup generates government RSA keys
+    2. Voter uses blinded signature to cast anonymous vote
+    3. Vote added to blockchain with receipt code
+    4. Users can verify receipt and blockchain integrity
+    """)
 
-# Page: Verify Document
-elif page == "Verify Document":
-    st.header("✅ Verify Document")
-    
-    st.subheader("Load Public Key for Verification")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("**Option 1: Use generated key from session**")
-        if st.session_state.public_key:
-            if st.button("Use Session Public Key"):
-                st.success("✅ Using public key from current session")
-        else:
-            st.info("No public key in session. Generate one or import from file.")
-    
-    with col2:
-        st.markdown("**Option 2: Import public key from file**")
-        key_file = st.file_uploader("Upload public key file (.pem)", type=["pem", "txt"], key="key_uploader")
-        if key_file:
-            try:
-                key_data = key_file.read()
-                st.session_state.public_key = RSA.import_key(key_data)
-                st.success("✅ Public key loaded successfully!")
-            except Exception as e:
-                st.error(f"Error loading public key: {str(e)}")
-    
-    st.divider()
-    
-    if st.session_state.public_key:
-        st.subheader("Upload Document and Signature for Verification")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            document = st.file_uploader("Choose document to verify", key="verify_doc_uploader")
-        
-        with col2:
-            signature_input = st.text_area("Paste signature (Base64 encoded):", height=150)
-        
-        if document and signature_input:
-            if st.button("Verify Signature", key="verify_btn"):
-                try:
-                    doc_data = document.read()
-                    is_valid = verify_document(doc_data, signature_input, st.session_state.public_key)
-                    
-                    if is_valid:
-                        st.success("✅ Signature is VALID! Document authenticity confirmed.")
-                    else:
-                        st.error("❌ Signature is INVALID! Document may have been tampered with.")
-                
-                except Exception as e:
-                    st.error(f"Error verifying document: {str(e)}")
-    else:
-        st.warning("⚠️ No public key available. Please load or generate a public key first.")
+st.divider()
 
-
-# Page: Key Management
-elif page == "Key Management":
-    st.header("🔑 Key Management")
+st.success(
+    """
+    ✅ **Ready to get started?**
     
-    st.subheader("Generate New Key Pair")
-    if st.button("Generate RSA Key Pair (2048 bits)", key="keymgmt_gen"):
-        st.session_state.private_key, st.session_state.public_key = generate_keys()
-        st.success("✅ New key pair generated!")
-    
-    st.divider()
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.subheader("Export Private Key")
-        if st.session_state.private_key:
-            private_key_pem = st.session_state.private_key.export_key().decode()
-            st.text_area("Private Key (PEM format):", value=private_key_pem, height=200, disabled=True)
-            st.download_button(
-                label="Download Private Key",
-                data=private_key_pem,
-                file_name="private_key.pem",
-                mime="text/plain"
-            )
-        else:
-            st.info("No private key generated yet.")
-    
-    with col2:
-        st.subheader("Export Public Key")
-        if st.session_state.public_key:
-            public_key_pem = st.session_state.public_key.export_key().decode()
-            st.text_area("Public Key (PEM format):", value=public_key_pem, height=200, disabled=True)
-            st.download_button(
-                label="Download Public Key",
-                data=public_key_pem,
-                file_name="public_key.pem",
-                mime="text/plain"
-            )
-        else:
-            st.info("No public key generated yet.")
-    
-    st.divider()
-    
-    st.subheader("Import Existing Keys")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        private_key_file = st.file_uploader("Import private key (.pem)", key="import_private")
-        if private_key_file:
-            try:
-                key_data = private_key_file.read()
-                st.session_state.private_key = RSA.import_key(key_data)
-                st.success("✅ Private key imported!")
-            except Exception as e:
-                st.error(f"Error importing private key: {str(e)}")
-    
-    with col2:
-        public_key_file = st.file_uploader("Import public key (.pem)", key="import_public")
-        if public_key_file:
-            try:
-                key_data = public_key_file.read()
-                st.session_state.public_key = RSA.import_key(key_data)
-                st.success("✅ Public key imported!")
-            except Exception as e:
-                st.error(f"Error importing public key: {str(e)}")
+    Navigate to the **Setup** page from the sidebar menu to begin!
+    """
+)

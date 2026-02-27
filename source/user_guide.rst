@@ -1,16 +1,17 @@
-User Guide: Document Signing & Verification
-=============================================
+User Guide: VoteChain Secure Voting System
+===========================================
 
 Overview
 --------
 
-The Document Signing & Verification Application is a Streamlit-based web interface that allows users to:
+VoteChain is a web-based demonstration of a secure voting system using blind signatures, RSA cryptography, and blockchain technology. It allows users to:
 
-- **Sign documents** using RSA cryptography to create digital signatures
-- **Verify signatures** to ensure document authenticity and integrity
-- **Manage cryptographic keys** for signing and verification operations
+- **Cast anonymous votes** using blind signature protocol
+- **Verify vote integrity** through blockchain exploration
+- **Understand cryptography** by witnessing the "crypto theater" process
+- **Audit elections** with receipt verification
 
-This guide will walk you through the installation, setup, and usage of the application.
+This guide walks you through installation, setup, and usage of the voting app.
 
 Prerequisites
 -------------
