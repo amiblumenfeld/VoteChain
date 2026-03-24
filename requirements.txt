@@ -6,25 +6,24 @@ pycryptodome
 
 
 #notes:
+    #Run the app:
 
-#Run the app:
-'''
-# Activate virtual environment
-    source .venv/bin/activate
+    # Activate virtual environment
+        #source .venv/bin/activate
 
-# Install dependencies (if not done)
-    pip install -r requirements.txt
+    # Install dependencies (if not done)
+        #pip install -r requirements.txt
 
-# Run the app
-    streamlit run streamlit_app/app.py
-'''
-     # → http://localhost:8501
-     
-#Tests:
-'''cd /Users/amichaiblumenfeld/cyber_grade_11/votting/VoteChain
-python3 streamlit_app/test_voting_system.py
-'''
+    # Run the app
+        #   streamlit run streamlit_app/app.py
+        # → http://localhost:8501
+        
+  
+  #Tests:
+    #   cd /Users/amichaiblumenfeld/cyber_grade_11/votting/VoteChain
+    #   python3 streamlit_app/test_voting_system.py
+    
 
-#open documentation:
-'''invoke build-doc'''
-    # → http://localhost:8000
+    #open documentation:
+        #  invoke build-doc
+        # → http://localhost:8000

@@ -2,7 +2,7 @@
 Cryptographic utilities for the Secure Voting System.
 
 This module provides RSA key generation, blind signatures, and related
-cryptographic operations needed for the voting demo.
+cryptographic operations needed for the voting system.
 """
 
 from Crypto.PublicKey import RSA

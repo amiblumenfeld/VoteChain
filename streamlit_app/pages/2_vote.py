@@ -66,6 +66,16 @@ if uploaded_file is not None:
             st.session_state.authenticated_voter_id = voter_id
             st.session_state.current_voter_key = voter_key
             st.success(f"🔑 Welcome, {voter_id}!")
+            
+            # Reset voting state if this is a new voter
+            if st.session_state.authenticated_voter_id != st.session_state.get('last_voter_id'):
+                st.session_state.vote_cast = False
+                st.session_state.crypto_complete = False
+                st.session_state.current_selection = None
+                # Don't reset current_receipt - it should persist for the current voter's session
+                st.session_state.email_sent = False
+                st.session_state.email_recipient = None
+                st.session_state.last_voter_id = st.session_state.authenticated_voter_id
     except Exception as e:
         st.error(f"❌ Error reading key file: {str(e)}")
         st.stop()
@@ -146,66 +156,54 @@ if not st.session_state.get('crypto_complete', False):
     st.info("👆 Click 'Begin Crypto Theater' above to secure your vote")
     st.stop()
 
+# Redirect already-completed vote to receipt page (Step 5/6)
+if st.session_state.get('vote_cast', False):
+    st.switch_page("5_receipt")
+
 st.divider()
 
 # Step 4: Submit Vote
 st.header("Step 4: Submit Your Vote")
 st.write("Ready to cast your vote? Click below to add it to the blockchain.")
 
-if st.button("🗳️ Cast Vote", key="cast_vote"):
-    try:
-        # Generate receipt code
-        receipt_code = generate_receipt_code()
-        
-        # Add to blockchain
-        vote_hash = hash_message(st.session_state.current_selection)
-        block = st.session_state.blockchain.add_vote(
-            vote_hash=vote_hash,
-            signature=st.session_state.final_signature,
-            receipt_code=receipt_code
-        )
-        
-        # Update vote counts
-        increment_vote_count(st.session_state.current_selection)
-        
-        # Mark voter as voted
-        mark_voter_as_voted(st.session_state.authenticated_voter_id, receipt_code)
-        
-        st.success("🎉 Your vote has been cast successfully!")
-        st.balloons()
-        
-        st.divider()
-        
-        # Step 5: Receipt
-        st.header("Step 5: Your Receipt")
-        st.write("**Save this code to verify your vote later:**")
-        
-        st.code(receipt_code, language=None)
-        
-        st.info(
-            f"✅ Your vote is now in **Block #{block.index}** of the blockchain\n\n"
-            f"Use this receipt code on the **Verify** page to prove your vote exists without revealing your choice."
-        )
-        
-        # Copy to clipboard helper
-        st.caption(
-            f"📋 Receipt Code: `{receipt_code}` (Save this!)\n\n"
-            f"Block Index: {block.index} | Timestamp: {block.timestamp}"
-        )
-        
-        # Clear session and offer next steps
-        time.sleep(2)
-        st.success("You can now vote again with a different voter key, or navigate to other pages to explore.")
-        
-        # Reset voter-specific state for next voter
-        st.session_state.current_selection = None
-        st.session_state.crypto_complete = False
-        st.session_state.authenticated_voter_id = None
-        st.session_state.current_voter_key = None
-        st.session_state.current_receipt = None
-        
-    except Exception as e:
-        st.error(f"❌ Error casting vote: {str(e)}")
+# Check if vote has already been cast
+vote_cast = st.session_state.get('vote_cast', False)
+
+if not vote_cast:
+    if st.button("🗳️ Cast Vote", key="cast_vote"):
+        try:
+            # Generate receipt code
+            receipt_code = generate_receipt_code()
+            
+            # Add to blockchain
+            vote_hash = hash_message(st.session_state.current_selection)
+            block = st.session_state.blockchain.add_vote(
+                vote_hash=vote_hash,
+                signature=st.session_state.final_signature,
+                receipt_code=receipt_code
+            )
+            
+            # Update vote counts
+            increment_vote_count(st.session_state.current_selection)
+            
+            # Mark voter as voted
+            mark_voter_as_voted(st.session_state.authenticated_voter_id, receipt_code)
+            
+            # Store receipt for next page
+            st.session_state.current_receipt = receipt_code
+            st.session_state.vote_cast = True
+            
+            st.success("🎉 Your vote has been cast successfully!")
+            st.balloons()
+            
+            # Redirect to receipt page for Step 5 and 6
+            st.switch_page("5_receipt")
+        except Exception as e:
+            st.error(f"❌ Error casting vote: {str(e)}")
+else:
+    st.success("🎉 Your vote has been cast successfully!")
+    st.balloons()
+    st.switch_page("5_receipt")
 
 st.divider()
 

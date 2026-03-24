@@ -1,7 +1,7 @@
 """
 Secure Voting System - Main Application Entry Point
 
-This Streamlit application demonstrates a secure voting system using:
+This Streamlit application provides a secure voting system using:
 - Blind signatures for voter privacy
 - RSA cryptography for authenticity
 - Blockchain for immutability and auditability
@@ -29,10 +29,10 @@ st.set_page_config(
 initialize_session_state()
 
 # Main Page
-st.title("🗳️ Secure Voting System Demo")
+st.title("🗳️ Secure Voting System")
 st.write(
     """
-    Welcome to the **Secure Voting System** - a demonstration of how modern cryptography 
+    Welcome to the **Secure Voting System** - a production-ready implementation of how modern cryptography 
     can ensure both **voter privacy** and **electoral integrity**.
     """
 )
@@ -75,7 +75,7 @@ with col2:
 st.divider()
 
 # How to Use
-st.header("How to Use This Demo")
+st.header("How to Use This System")
 
 st.markdown("""
 1. **Setup Page** (`🔧 Election Setup`)

@@ -8,6 +8,7 @@ and other common operations.
 import streamlit as st
 import string
 import random
+from datetime import datetime
 from typing import Dict, Any, List
 
 
@@ -61,6 +62,22 @@ def initialize_session_state() -> None:
         st.session_state.current_selection = None
     if 'current_receipt' not in st.session_state:
         st.session_state.current_receipt = None
+    
+    # Voting progress states
+    if 'vote_cast' not in st.session_state:
+        st.session_state.vote_cast = False
+    if 'crypto_complete' not in st.session_state:
+        st.session_state.crypto_complete = False
+    if 'last_voter_id' not in st.session_state:
+        st.session_state.last_voter_id = None
+    
+    # Email functionality (optional)
+    if 'sent_certificates' not in st.session_state:
+        st.session_state.sent_certificates = []  # List of sent certificates
+    if 'email_sent' not in st.session_state:
+        st.session_state.email_sent = False
+    if 'email_recipient' not in st.session_state:
+        st.session_state.email_recipient = None
 
 
 def generate_receipt_code(length: int = 12) -> str:
@@ -97,6 +114,9 @@ def reset_election() -> None:
     st.session_state.voted_voters = set()
     st.session_state.voter_receipts = {}
     st.session_state.vote_counts = {}
+    
+    # Reset email-related state
+    st.session_state.sent_certificates = []
     
     clear_voter_session()
 
@@ -217,3 +237,156 @@ def get_total_votes() -> int:
         Total vote count
     """
     return sum(st.session_state.vote_counts.values())
+
+
+# Email functionality for optional certificate delivery
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from typing import Optional
+
+
+def send_voting_certificate(email: str, voter_id: str, receipt_code: str, candidate: str) -> bool:
+    """
+    Send a voting certificate via email.
+
+    Args:
+        email: Recipient email address
+        voter_id: Voter identifier
+        receipt_code: Receipt code for verification
+        candidate: Candidate voted for
+
+    Returns:
+        True if email sent successfully, False otherwise
+    """
+    print(f"\n{'='*60}")
+    print(f"📧 STARTING EMAIL SEND PROCESS")
+    print(f"{'='*60}")
+    print(f"To: {email}")
+    print(f"Voter ID: {voter_id}")
+    print(f"Receipt Code: {receipt_code}")
+    print(f"Candidate: {candidate}")
+    print(f"{'='*60}\n")
+    
+    try:
+        # Hardcoded Gmail configuration
+        smtp_server = 'smtp.gmail.com'
+        smtp_port = 587
+        sender_email = 'very.secure.voting.system@gmail.com'
+        sender_password = 'eqxrausisfwyzxpo'
+        
+        print(f"Step 1: Connecting to {smtp_server}:{smtp_port}...")
+
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = email
+        msg['Subject'] = 'Your Secure Voting Certificate'
+
+        print(f"Step 2: Creating message...")
+        
+        # Certificate content
+        certificate_text = f"""
+SECURE VOTING SYSTEM - OFFICIAL CERTIFICATE
+==========================================
+
+Voter ID: {voter_id}
+Date/Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+CERTIFICATE OF VOTING
+---------------------
+
+This certifies that you have successfully cast your vote in the election.
+
+Your Vote Receipt Code: {receipt_code}
+
+IMPORTANT SECURITY NOTICE:
+- This certificate proves you voted, but does not reveal your choice
+- Keep your receipt code secure for vote verification
+- Your vote remains anonymous and cannot be linked to your identity
+
+To verify your vote:
+1. Visit the Verify page
+2. Enter your receipt code: {receipt_code}
+3. Confirm your vote exists in the blockchain
+
+Thank you for participating in secure democratic voting!
+
+Election Authority
+Secure Voting System
+"""
+        msg.attach(MIMEText(certificate_text, 'plain'))
+
+        print(f"Step 3: Attaching email content...")
+
+        # Send email
+        print(f"Step 4: Connecting to SMTP server...")
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        
+        print(f"Step 5: Starting TLS...")
+        server.starttls()
+        
+        print(f"Step 6: Logging in as {sender_email}...")
+        server.login(sender_email, sender_password)
+        
+        print(f"Step 7: Converting message to string...")
+        text = msg.as_string()
+        
+        print(f"Step 8: Sending email...")
+        server.sendmail(sender_email, email, text)
+        
+        print(f"Step 9: Closing connection...")
+        server.quit()
+
+        print(f"\n✅ SUCCESS! Certificate sent to {email}\n")
+        print(f"{'='*60}\n")
+        return True
+
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"\n❌ AUTHENTICATION ERROR: {e}")
+        print(f"Check your Gmail password/app password")
+        print(f"{'='*60}\n")
+        return False
+    except Exception as e:
+        print(f"\n❌ ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        print(f"{'='*60}\n")
+        return False
+
+
+def test_email_configuration() -> bool:
+    """
+    Test email configuration by sending a test email.
+
+    Returns:
+        True if test email sent successfully, False otherwise
+    """
+    try:
+        # Hardcoded Gmail configuration
+        smtp_server = 'smtp.gmail.com'
+        smtp_port = 587
+        sender_email = 'very.secure.voting.system@gmail.com'
+        sender_password = 'eqxrausisfwyzxpo'
+
+        # Create test message
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = sender_email  # Send to self for testing
+        msg['Subject'] = 'Secure Voting System - Email Test'
+
+        msg.attach(MIMEText('This is a test email from the Secure Voting System.', 'plain'))
+
+        # Send test email
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        text = msg.as_string()
+        server.sendmail(sender_email, sender_email, text)
+        server.quit()
+
+        return True
+
+    except Exception as e:
+        print(f"❌ Email test failed: {e}")
+        return False

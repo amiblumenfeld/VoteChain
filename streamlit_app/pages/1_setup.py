@@ -20,7 +20,7 @@ from utils import initialize_session_state, reset_election, validate_election_st
 initialize_session_state()
 
 st.title("🔧 Election Setup")
-st.write("Initialize the election infrastructure for the secure voting demo.")
+st.write("Initialize the election infrastructure for the secure voting system.")
 
 st.divider()
 
@@ -169,3 +169,12 @@ election_initialized: {st.session_state.election_initialized}
     if st.session_state.government_public_key:
         st.write("**Government Public Key (PEM):**")
         st.code(st.session_state.government_public_key.export_key().decode()[:200] + "...")
+
+# Email Certificate Log (Optional Feature)
+with st.expander("📧 Email Certificate Log"):
+    st.write("**Sent Certificates:**")
+    if st.session_state.sent_certificates:
+        for cert in st.session_state.sent_certificates:
+            st.write(f"• {cert['email']} - {cert['voter_id']} - Receipt: {cert['receipt_code']} - {cert['timestamp']}")
+    else:
+        st.info("No certificates sent yet.")
