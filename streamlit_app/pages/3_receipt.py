@@ -73,17 +73,3 @@ if send_btn:
 
 if skip_btn:
     st.success("✅ Done! Your vote is recorded.", icon="✅")
-
-st.divider()
-
-st.markdown("### Navigation")
-col1, col2, col3 = st.columns(3)
-with col1:
-    if st.button("🗳️ Back to Vote"):
-        st.switch_page("2_vote")
-with col2:
-    if st.button("📊 View Results"):
-        st.switch_page("3_results")
-with col3:
-    if st.button("🔍 Verify Vote"):
-        st.switch_page("4_verify")

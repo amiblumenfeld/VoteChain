@@ -159,7 +159,7 @@ if not st.session_state.get('crypto_complete', False):
 
 # Redirect already-completed vote to receipt page (Step 5/6)
 if st.session_state.get('vote_cast', False):
-    st.switch_page("5_receipt")
+    st.switch_page("3_receipt")
 
 st.divider()
 
