@@ -54,14 +54,20 @@ VoteChain is a **Streamlit-based web application** that demonstrates secure voti
 - Step 3: Crypto theater (blind → sign → unblind)
 - Step 4: Submit vote
 - Step 5: Display receipt
+- Step 6: Email certificate (optional)
 
-**pages/3_results.py** (Results)
+**pages/3_receipt.py** (Receipt)
+- Step 5: Your receipt code
+- Step 6: Email certificate option
+- Confirmation of vote in blockchain
+
+**pages/4_results.py** (Results)
 - Real-time vote tallies
 - Vote distribution charts
 - Election status metrics
 - Blockchain statistics
 
-**pages/4_verify.py** (Verification)
+**pages/5_verify.py** (Verification)
 - Receipt code search
 - Blockchain integrity check
 - Blockchain explorer

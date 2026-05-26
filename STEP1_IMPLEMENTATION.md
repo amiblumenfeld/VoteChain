@@ -80,11 +80,18 @@ Session state and application helpers:
   - 🔓 Unblinding
   - ~1.5 second delays for dramatic effect
 - Step 4: Submit vote & receive receipt
-- Step 5: Display receipt code prominently
 - Double-vote prevention
 - Help section explaining the protocol
 
-#### **pages/3_results.py** (Results Dashboard)
+#### **pages/3_receipt.py** (Receipt & Email Certificate)
+**Length:** 90 lines
+**Features:**
+- Display receipt code for vote verification
+- Email certificate option (optional)
+- Confirmation that vote is in blockchain
+- Error handling for missing votes
+
+#### **pages/4_results.py** (Results Dashboard)
 **Length:** 150+ lines
 **Features:**
 - Real-time vote counts (using `st.metric()`)
@@ -94,7 +101,7 @@ Session state and application helpers:
 - Blockchain statistics
 - Blockchain explorer with expandable blocks
 
-#### **pages/4_verify.py** (Verification & Audit)
+#### **pages/5_verify.py** (Verification & Audit)
 **Length:** 200+ lines
 **Features:**
 - Receipt search interface

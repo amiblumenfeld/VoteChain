@@ -39,14 +39,20 @@ VoteChain demonstrates how modern cryptography can ensure both **voter privacy**
 - Watch blind signature process (crypto theater)
 - Cast vote and receive receipt
 
-### 4. Results Page (3_results.py)
+### 4. Receipt Page (3_receipt.py)
+*Vote confirmation and email certificate*
+- Display receipt code
+- Email voting certificate (optional)
+- Confirmation of vote in blockchain
+
+### 5. Results Page (4_results.py)
 *Live election dashboard*
 - Vote counts by candidate
 - Blockchain statistics
 - Vote distribution visualization
 - Chain integrity status
 
-### 5. Verify Page (4_verify.py)
+### 6. Verify Page (5_verify.py)
 *Audit and verification*
 - Search votes by receipt code
 - Verify blockchain integrity
@@ -99,8 +105,9 @@ streamlit_app/
 └── pages/
     ├── 1_setup.py             # Election setup page
     ├── 2_vote.py              # Voting page (main experience)
-    ├── 3_results.py           # Results dashboard
-    └── 4_verify.py            # Verification & audit page
+    ├── 3_receipt.py           # Receipt and email certificate
+    ├── 4_results.py           # Results dashboard
+    └── 5_verify.py            # Verification & audit page
 ```
 
 ## 🔐 Cryptographic Details
@@ -131,13 +138,15 @@ streamlit_app/
 3. Select candidate
 4. Watch crypto theater (blind → sign → unblind)
 5. Click "Cast Vote"
-6. Save receipt code
+6. View receipt on Receipt page
+7. Optionally provide email for certificate
 
 ### For Auditor (Mr. Cohen)
-1. Navigate to Verify page
-2. Enter receipt code to verify vote
-3. Click "Verify Chain Integrity"
-4. Explore blockchain blocks
+1. Navigate to Results page to see vote counts
+2. Navigate to Verify page
+3. Enter receipt code to verify vote
+4. Click "Verify Chain Integrity"
+5. Explore blockchain blocks
 
 ## 🧪 Testing
 

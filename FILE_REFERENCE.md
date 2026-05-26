@@ -23,8 +23,9 @@ Quick reference guide for all files in the VoteChain project.
     └── pages/
         ├── 1_setup.py                 ← Admin setup page (200+ lines)
         ├── 2_vote.py                  ← Voting interface (280+ lines)
-        ├── 3_results.py               ← Results dashboard (150+ lines)
-        └── 4_verify.py                ← Verification & audit (200+ lines)
+        ├── 3_receipt.py               ← Receipt & email certificate (90 lines)
+        ├── 4_results.py               ← Results dashboard (150+ lines)
+        └── 5_verify.py                ← Verification & audit (200+ lines)
 ```
 
 ## 📄 File Descriptions
